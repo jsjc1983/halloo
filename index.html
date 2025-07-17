@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Dashboard de Proyectos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .edit-mode {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .edit-toggle {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .edit-toggle:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .edit-toggle.active {
+            background: #ff6b6b;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .project-card.editing {
+            border-color: #ff6b6b;
+            background: #fffbfb;
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            border: none;
+            background: transparent;
+            width: 100%;
+            outline: none;
+        }
+
+        .project-title:focus {
+            border-bottom: 2px solid #667eea;
+        }
+
+        .project-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            border: none;
+            background: transparent;
+            width: 100%;
+            resize: vertical;
+            min-height: 60px;
+            outline: none;
+        }
+
+        .project-description:focus {
+            border-bottom: 2px solid #667eea;
+        }
+
+        .project-url {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: none;
+            outline: none;
+        }
+
+        .project-url:focus {
+            border-color: #667eea;
+        }
+
+        .project-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .project-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-btn:hover {
+            background: #ff3742;
+        }
+
+        .add-project {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 200px;
+        }
+
+        .add-project:hover {
+            background: #e9ecef;
+            border-color: #5a6fd8;
+        }
+
+        .n8n-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid #eee;
+        }
+
+        .n8n-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .n8n-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .editing .project-url {
+            display: block;
+        }
+
+        .editing .delete-btn {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Mi Dashboard de Proyectos</h1>
+            <p>Organiza y accede a todos tus proyectos desde un solo lugar</p>
+        </div>
+
+        <div class="edit-mode">
+            <button class="edit-toggle" onclick="toggleEditMode()">✏️ Activar Modo Edición</button>
+        </div>
+
+        <div class="projects-grid" id="projectsGrid">
+            <!-- Los proyectos se cargarán aquí -->
+        </div>
+
+        <div class="n8n-section">
+            <h2>🔧 Automatizaciones</h2>
+            <p style="margin: 10px 0; color: #666;">Accede a tu panel de N8N para gestionar automatizaciones</p>
+            <a href="https://primary-production-1f12b.up.railway.app/home/workflows" class="n8n-button" target="_blank">
+                🔗 Abrir N8N
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let editMode = false;
+        let projects = [
+            {
+                id: 1,
+                title: "Proyecto de Ejemplo",
+                description: "Esta es una descripción de ejemplo. Puedes editarla en modo edición.",
+                url: "https://example.com"
+            },
+            {
+                id: 2,
+                title: "Otro Proyecto",
+                description: "Aquí irá la descripción de tu segundo proyecto.",
+                url: "https://github.com"
+            }
+        ];
+
+        function loadProjects() {
+            const saved = localStorage.getItem('dashboard-projects');
+            if (saved) {
+                projects = JSON.parse(saved);
+            }
+        }
+
+        function saveProjects() {
+            localStorage.setItem('dashboard-projects', JSON.stringify(projects));
+        }
+
+        function renderProjects() {
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = '';
+
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = `project-card ${editMode ? 'editing' : ''}`;
+                card.innerHTML = `
+                    <button class="delete-btn" onclick="deleteProject(${project.id})">×</button>
+                    <input type="text" class="project-title" value="${project.title}" 
+                           onchange="updateProject(${project.id}, 'title', this.value)" 
+                           ${editMode ? '' : 'readonly'}>
+                    <textarea class="project-description" 
+                              onchange="updateProject(${project.id}, 'description', this.value)"
+                              ${editMode ? '' : 'readonly'}>${project.description}</textarea>
+                    <input type="url" class="project-url" value="${project.url}" 
+                           placeholder="https://ejemplo.com"
+                           onchange="updateProject(${project.id}, 'url', this.value)">
+                    <a href="${project.url}" class="project-button" target="_blank">
+                        🔗 Abrir Proyecto
+                    </a>
+                `;
+                grid.appendChild(card);
+            });
+
+            if (editMode) {
+                const addCard = document.createElement('div');
+                addCard.className = 'project-card add-project';
+                addCard.innerHTML = '+';
+                addCard.onclick = addProject;
+                grid.appendChild(addCard);
+            }
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            const button = document.querySelector('.edit-toggle');
+            
+            if (editMode) {
+                button.textContent = '💾 Guardar y Salir';
+                button.classList.add('active');
+            } else {
+                button.textContent = '✏️ Activar Modo Edición';
+                button.classList.remove('active');
+                saveProjects();
+            }
+            
+            renderProjects();
+        }
+
+        function addProject() {
+            const newProject = {
+                id: Date.now(),
+                title: "Nuevo Proyecto",
+                description: "Describe tu nuevo proyecto aquí",
+                url: "https://"
+            };
+            projects.push(newProject);
+            renderProjects();
+        }
+
+        function deleteProject(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este proyecto?')) {
+                projects = projects.filter(p => p.id !== id);
+                renderProjects();
+            }
+        }
+
+        function updateProject(id, field, value) {
+            const project = projects.find(p => p.id === id);
+            if (project) {
+                project[field] = value;
+            }
+        }
+
+        // Inicializar
+        loadProjects();
+        renderProjects();
+    </script>
+</body>
+</html>
