@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menufy | Gestión de Comidas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #22d3ee;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --muted: #475569;
+            --card-bg: rgba(15, 23, 42, 0.6);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --gradient: linear-gradient(135deg, rgba(99, 102, 241, 0.92), rgba(56, 189, 248, 0.92));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top, rgba(56, 189, 248, 0.15), transparent 40%),
+                        radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15), transparent 35%),
+                        var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: rgba(15, 23, 42, 0.5);
+            color: var(--text);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .tab-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 28px;
+            backdrop-filter: blur(18px);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: rgba(226, 232, 240, 0.85);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.12);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.2);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: rgba(226, 232, 240, 0.95);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text);
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .event-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .event-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .event-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-status {
+            background: rgba(34, 211, 238, 0.2);
+            color: #bae6fd;
+            border: 1px solid rgba(34, 211, 238, 0.3);
+        }
+
+        .badge-count {
+            background: rgba(99, 102, 241, 0.2);
+            color: #c7d2fe;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .badge-allergen {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            font-size: 0.75rem;
+        }
+
+        .dish-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dish-card:hover {
+            border-color: var(--primary);
+        }
+
+        .dish-card.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.15);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .dish-card h4 {
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }
+
+        .dish-card p {
+            color: rgba(226, 232, 240, 0.75);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .allergens {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: rgba(148, 163, 184, 0.2);
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .table th {
+            text-align: left;
+            padding: 12px;
+            background: rgba(99, 102, 241, 0.15);
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+            font-weight: 600;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .table tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: rgba(226, 232, 240, 0.7);
+            margin-bottom: 24px;
+        }
+
+        .link-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        .link-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .link-box input:focus {
+            outline: none;
+        }
+
+        .category-section {
+            margin-bottom: 32px;
+        }
+
+        .category-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            text-align: center;
+        }
+
+        .stat-box .label {
+            display: block;
+            color: rgba(226, 232, 240, 0.7);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-box .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+        }
+
+        .checkbox-label input {
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .nav-tabs {
+                width: 100%;
+            }
+
+            .tab-btn {
+                flex: 1;
+                min-width: 100px;
+            }
+
+            .modal-content {
+                padding: 24px;
+            }
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .participant-list {
+            margin-top: 16px;
+        }
+
+        .participant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .participant-info h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .participant-info p {
+            font-size: 0.85rem;
+            color: rgba(226, 232, 240, 0.7);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🍽️ Menufy</div>
+            <div class="nav-tabs" id="adminTabs" style="display: none;">
+                <button class="tab-btn active" onclick="switchView('events')">Eventos</button>
+                <button class="tab-btn" onclick="switchView('menus')">Menús</button>
+                <button class="tab-btn" onclick="switchView('settings')">Configuración</button>
+            </div>
+        </div>
+
+        <!-- Admin Views -->
+        <div id="adminPanel" style="display: none;">
+            <!-- Events View -->
+            <div id="eventsView" class="view active">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                        <div>
+                            <h2>Mis Eventos</h2>
+                            <p>Gestiona reservas de grupo, cenas privadas y eventos corporativos</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openNewEventModal()">
+                            + Nuevo Evento
+                        </button>
+                    </div>
+                </div>
+
+                <div id="eventsList"></div>
+            </div>
+
+            <!-- Menus View -->
+            <div id="menusView" class="view">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                        <div>
+                            <h2>Biblioteca de Menús</h2>
+                            <p>Crea y gestiona tus menús con platos y alérgenos</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openNewMenuModal()">
+                            + Nuevo Menú
+                        </button>
+                    </div>
+                </div>
+
+                <div id="menusList"></div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="settingsView" class="view">
+                <div class="card">
+                    <h2>Configuración</h2>
+                    <p>Personaliza tu experiencia en Menufy</p>
+
+                    <div class="form-group">
+                        <label>Nombre del Restaurante</label>
+                        <input type="text" class="form-control" id="restaurantName" placeholder="Mi Restaurante">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email de Contacto</label>
+                        <input type="email" class="form-control" id="contactEmail" placeholder="hola@mirestaurante.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Teléfono de Contacto</label>
+                        <input type="tel" class="form-control" id="contactPhone" placeholder="+34 600 000 000">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="saveSettings()">Guardar Configuración</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guest View -->
+        <div id="guestPanel" style="display: none;">
+            <a href="#" class="back-link" onclick="loadGuestEvent()">← Volver al evento</a>
+
+            <div class="card">
+                <div id="guestEventInfo"></div>
+            </div>
+
+            <div id="guestMenuSelection"></div>
+
+            <div class="card" id="guestFormCard" style="display: none;">
+                <h2>Tus Datos</h2>
+                <div class="form-group">
+                    <label>Nombre completo *</label>
+                    <input type="text" class="form-control" id="guestName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" class="form-control" id="guestEmail" required>
+                </div>
+
+                <div class="form-group">
+                    <label>¿Tienes alguna alergia o restricción alimentaria?</label>
+                    <textarea class="form-control" id="guestAllergyNotes" placeholder="Ej: Intolerancia a la lactosa, vegetariano..."></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="submitGuestSelection()">Confirmar Selección</button>
+            </div>
+
+            <div id="guestConfirmation" style="display: none;">
+                <div class="card">
+                    <div class="success-message">
+                        <span style="font-size: 2rem;">✅</span>
+                        <div>
+                            <strong>¡Selección confirmada!</strong><br>
+                            Hemos recibido tu elección de menú correctamente.
+                        </div>
+                    </div>
+                    <div id="guestSelectionSummary"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Welcome View -->
+        <div id="welcomeView">
+            <div class="card">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🍽️</div>
+                    <h3>Bienvenido a Menufy</h3>
+                    <p>Gestiona tus eventos de grupo de forma inteligente</p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="startAsAdmin()">Soy Organizador</button>
+                        <a href="index.html" class="btn btn-secondary">Volver al Inicio</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Event Modal -->
+    <div id="newEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Evento</h2>
+                <button class="close-modal" onclick="closeModal('newEventModal')">×</button>
+            </div>
+
+            <div class="form-group">
+                <label>Nombre del Evento *</label>
+                <input type="text" class="form-control" id="eventName" placeholder="Ej: Cena de empresa 2026">
+            </div>
+
+            <div class="form-group">
+                <label>Fecha del Evento *</label>
+                <input type="date" class="form-control" id="eventDate">
+            </div>
+
+            <div class="form-group">
+                <label>Hora del Evento</label>
+                <input type="time" class="form-control" id="eventTime">
+            </div>
+
+            <div class="form-group">
+                <label>Número Máximo de Asistentes</label>
+                <input type="number" class="form-control" id="eventMaxAttendees" placeholder="50">
+            </div>
+
+            <div class="form-group">
+                <label>Fecha Límite para Confirmaciones *</label>
+                <input type="datetime-local" class="form-control" id="eventDeadline">
+            </div>
+
+            <div class="form-group">
+                <label>Menú Asociado</label>
+                <select class="form-control" id="eventMenu">
+                    <option value="">Seleccionar menú...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea class="form-control" id="eventDescription" placeholder="Detalles adicionales del evento..."></textarea>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="createEvent()">Crear Evento</button>
+                <button class="btn btn-secondary" onclick="closeModal('newEventModal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Menu Modal -->
+    <div id="newMenuModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Menú</h2>
+                <button class="close-modal" onclick="closeModal('newMenuModal')">×</button>
+            </div>
+
+            <div class="form-group">
+                <label>Nombre del Menú *</label>
+                <input type="text" class="form-control" id="menuName" placeholder="Ej: Menú Ejecutivo">
+            </div>
+
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea class="form-control" id="menuDescription" placeholder="Descripción del menú..."></textarea>
+            </div>
+
+            <h3 style="margin-top: 24px; margin-bottom: 16px;">Platos</h3>
+            <div id="dishesContainer"></div>
+
+            <button class="btn btn-secondary btn-small" onclick="addDishField()" style="margin-bottom: 20px;">
+                + Añadir Plato
+            </button>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="createMenu()">Guardar Menú</button>
+                <button class="btn btn-secondary" onclick="closeModal('newMenuModal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div id="eventDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 id="eventDetailsTitle">Detalles del Evento</h2>
+                <button class="close-modal" onclick="closeModal('eventDetailsModal')">×</button>
+            </div>
+
+            <div id="eventDetailsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        const STORAGE_KEYS = {
+            EVENTS: 'menufy_events',
+            MENUS: 'menufy_menus',
+            PARTICIPANTS: 'menufy_participants',
+            SETTINGS: 'menufy_settings'
+        };
+
+        const ALLERGENS = ['Gluten', 'Lactosa', 'Huevo', 'Frutos secos', 'Pescado', 'Marisco', 'Soja', 'Mostaza', 'Sésamo', 'Sulfitos', 'Apio', 'Altramuz'];
+
+        let currentEventId = null;
+        let currentGuestToken = null;
+
+        // Initialize App
+        function initApp() {
+            // Check if it's a guest link
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventToken = urlParams.get('event');
+
+            if (eventToken) {
+                currentGuestToken = eventToken;
+                showGuestView(eventToken);
+            } else {
+                showWelcomeView();
+            }
+        }
+
+        function showWelcomeView() {
+            document.getElementById('welcomeView').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('guestPanel').style.display = 'none';
+            document.getElementById('adminTabs').style.display = 'none';
+        }
+
+        function startAsAdmin() {
+            document.getElementById('welcomeView').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('adminTabs').style.display = 'flex';
+            loadEvents();
+            loadMenus();
+            loadSettings();
+        }
+
+        function showGuestView(eventToken) {
+            document.getElementById('welcomeView').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('guestPanel').style.display = 'block';
+            document.getElementById('adminTabs').style.display = 'none';
+            loadGuestEvent();
+        }
+
+        // View Switching
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById(viewName + 'View').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Local Storage Functions
+        function getData(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function generateId() {
+            return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function generateToken() {
+            return Math.random().toString(36).substr(2, 12) + Date.now().toString(36);
+        }
+
+        // Events Management
+        function loadEvents() {
+            const events = getData(STORAGE_KEYS.EVENTS);
+            const eventsContainer = document.getElementById('eventsList');
+
+            if (events.length === 0) {
+                eventsContainer.innerHTML = `
+                    <div class="card">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <h3>No hay eventos todavía</h3>
+                            <p>Crea tu primer evento para empezar a gestionar comidas de grupo</p>
+                            <button class="btn btn-primary" onclick="openNewEventModal()">Crear Primer Evento</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            eventsContainer.innerHTML = '<div class="grid grid-2">' +
+                events.map(event => {
+                    const participants = getData(STORAGE_KEYS.PARTICIPANTS).filter(p => p.eventId === event.id);
+                    const isActive = new Date(event.deadline) > new Date();
+
+                    return `
+                        <div class="event-card" onclick="viewEventDetails('${event.id}')">
+                            <h3>${event.name}</h3>
+                            <p>${event.description || 'Sin descripción'}</p>
+                            <div class="event-meta">
+                                <span class="badge badge-status">
+                                    ${isActive ? '🟢 Activo' : '🔴 Cerrado'}
+                                </span>
+                                <span class="badge badge-count">
+                                    👥 ${participants.length}/${event.maxAttendees || '∞'} confirmados
+                                </span>
+                                <span class="badge badge-count">
+                                    📅 ${formatDate(event.date)}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }).join('') +
+                '</div>';
+        }
+
+        function openNewEventModal() {
+            // Load menus for selection
+            const menus = getData(STORAGE_KEYS.MENUS);
+            const menuSelect = document.getElementById('eventMenu');
+            menuSelect.innerHTML = '<option value="">Seleccionar menú...</option>' +
+                menus.map(menu => `<option value="${menu.id}">${menu.name}</option>`).join('');
+
+            document.getElementById('newEventModal').classList.add('active');
+        }
+
+        function createEvent() {
+            const name = document.getElementById('eventName').value;
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+            const maxAttendees = document.getElementById('eventMaxAttendees').value;
+            const deadline = document.getElementById('eventDeadline').value;
+            const menuId = document.getElementById('eventMenu').value;
+            const description = document.getElementById('eventDescription').value;
+
+            if (!name || !date || !deadline) {
+                alert('Por favor, completa los campos obligatorios');
+                return;
+            }
+
+            const events = getData(STORAGE_KEYS.EVENTS);
+            const newEvent = {
+                id: generateId(),
+                token: generateToken(),
+                name,
+                date,
+                time,
+                maxAttendees: maxAttendees ? parseInt(maxAttendees) : null,
+                deadline,
+                menuId,
+                description,
+                createdAt: new Date().toISOString()
+            };
+
+            events.push(newEvent);
+            saveData(STORAGE_KEYS.EVENTS, events);
+
+            closeModal('newEventModal');
+            clearEventForm();
+            loadEvents();
+        }
+
+        function clearEventForm() {
+            document.getElementById('eventName').value = '';
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventTime').value = '';
+            document.getElementById('eventMaxAttendees').value = '';
+            document.getElementById('eventDeadline').value = '';
+            document.getElementById('eventMenu').value = '';
+            document.getElementById('eventDescription').value = '';
+        }
+
+        function viewEventDetails(eventId) {
+            currentEventId = eventId;
+            const events = getData(STORAGE_KEYS.EVENTS);
+            const event = events.find(e => e.id === eventId);
+
+            if (!event) return;
+
+            const participants = getData(STORAGE_KEYS.PARTICIPANTS).filter(p => p.eventId === eventId);
+            const menu = event.menuId ? getData(STORAGE_KEYS.MENUS).find(m => m.id === event.menuId) : null;
+
+            const eventUrl = `${window.location.origin}${window.location.pathname}?event=${event.token}`;
+
+            let content = `
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="label">Confirmados</span>
+                        <span class="value">${participants.length}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="label">Fecha</span>
+                        <span class="value" style="font-size: 1rem;">${formatDate(event.date)}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="label">Estado</span>
+                        <span class="value" style="font-size: 1rem;">
+                            ${new Date(event.deadline) > new Date() ? '🟢 Activo' : '🔴 Cerrado'}
+                        </span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 12px;">Enlace para Invitados</h3>
+                    <div class="link-box">
+                        <input type="text" value="${eventUrl}" readonly id="eventLinkInput">
+                        <button class="btn btn-primary btn-small" onclick="copyEventLink()">
+                            📋 Copiar
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 12px;">Menú: ${menu ? menu.name : 'No asignado'}</h3>
+                    ${menu ? renderMenuDetails(menu) : '<p>No hay menú asignado a este evento</p>'}
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 12px;">Participantes (${participants.length})</h3>
+                    ${renderParticipantsList(participants, menu)}
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="exportToCSV('${eventId}')">
+                        📥 Exportar CSV
+                    </button>
+                    <button class="btn btn-primary" onclick="printEventReport('${eventId}')">
+                        🖨️ Imprimir Informe
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteEvent('${eventId}')">
+                        🗑️ Eliminar Evento
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('eventDetailsTitle').textContent = event.name;
+            document.getElementById('eventDetailsContent').innerHTML = content;
+            document.getElementById('eventDetailsModal').classList.add('active');
+        }
+
+        function renderMenuDetails(menu) {
+            if (!menu.dishes || menu.dishes.length === 0) {
+                return '<p>Este menú no tiene platos configurados</p>';
+            }
+
+            const groupedDishes = {};
+            menu.dishes.forEach(dish => {
+                if (!groupedDishes[dish.category]) {
+                    groupedDishes[dish.category] = [];
+                }
+                groupedDishes[dish.category].push(dish);
+            });
+
+            return Object.keys(groupedDishes).map(category => `
+                <div class="category-section">
+                    <h4>${category}</h4>
+                    <div class="grid grid-2">
+                        ${groupedDishes[category].map(dish => `
+                            <div class="dish-card" style="cursor: default;">
+                                <h4>${dish.name}</h4>
+                                <p>${dish.description || ''}</p>
+                                ${dish.allergens && dish.allergens.length > 0 ? `
+                                    <div class="allergens">
+                                        ${dish.allergens.map(a => `<span class="badge badge-allergen">${a}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderParticipantsList(participants, menu) {
+            if (participants.length === 0) {
+                return '<p style="color: rgba(226, 232, 240, 0.7);">Aún no hay participantes confirmados</p>';
+            }
+
+            return `
+                <div class="participant-list">
+                    ${participants.map(p => {
+                        let dishesText = 'No ha seleccionado platos';
+                        if (p.selectedDishes && menu) {
+                            const selectedDishNames = p.selectedDishes.map(dishId => {
+                                const dish = menu.dishes.find(d => d.id === dishId);
+                                return dish ? dish.name : 'Plato desconocido';
+                            });
+                            dishesText = selectedDishNames.join(', ');
+                        }
+
+                        return `
+                            <div class="participant-item">
+                                <div class="participant-info">
+                                    <h4>${p.name}</h4>
+                                    <p>📧 ${p.email}</p>
+                                    <p>🍽️ ${dishesText}</p>
+                                    ${p.allergyNotes ? `<p>⚠️ ${p.allergyNotes}</p>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function copyEventLink() {
+            const input = document.getElementById('eventLinkInput');
+            input.select();
+            document.execCommand('copy');
+            alert('¡Enlace copiado al portapapeles!');
+        }
+
+        function deleteEvent(eventId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este evento? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            let events = getData(STORAGE_KEYS.EVENTS);
+            events = events.filter(e => e.id !== eventId);
+            saveData(STORAGE_KEYS.EVENTS, events);
+
+            // Also delete participants
+            let participants = getData(STORAGE_KEYS.PARTICIPANTS);
+            participants = participants.filter(p => p.eventId !== eventId);
+            saveData(STORAGE_KEYS.PARTICIPANTS, participants);
+
+            closeModal('eventDetailsModal');
+            loadEvents();
+        }
+
+        // Menus Management
+        function loadMenus() {
+            const menus = getData(STORAGE_KEYS.MENUS);
+            const menusContainer = document.getElementById('menusList');
+
+            if (menus.length === 0) {
+                menusContainer.innerHTML = `
+                    <div class="card">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <h3>No hay menús todavía</h3>
+                            <p>Crea tu primer menú con platos y alérgenos</p>
+                            <button class="btn btn-primary" onclick="openNewMenuModal()">Crear Primer Menú</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            menusContainer.innerHTML = '<div class="grid grid-2">' +
+                menus.map(menu => `
+                    <div class="event-card" onclick="editMenu('${menu.id}')">
+                        <h3>${menu.name}</h3>
+                        <p>${menu.description || 'Sin descripción'}</p>
+                        <div class="event-meta">
+                            <span class="badge badge-count">
+                                🍽️ ${menu.dishes ? menu.dishes.length : 0} platos
+                            </span>
+                        </div>
+                    </div>
+                `).join('') +
+                '</div>';
+        }
+
+        function openNewMenuModal() {
+            document.getElementById('dishesContainer').innerHTML = '';
+            addDishField();
+            document.getElementById('newMenuModal').classList.add('active');
+        }
+
+        let dishCounter = 0;
+
+        function addDishField() {
+            const container = document.getElementById('dishesContainer');
+            const dishId = 'dish_' + (dishCounter++);
+
+            const dishDiv = document.createElement('div');
+            dishDiv.className = 'card';
+            dishDiv.style.marginBottom = '16px';
+            dishDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4>Plato ${dishCounter}</h4>
+                    <button class="btn btn-danger btn-small" onclick="this.parentElement.parentElement.remove()">Eliminar</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Categoría *</label>
+                    <select class="form-control dish-category">
+                        <option value="Entrantes">Entrantes</option>
+                        <option value="Primeros">Primeros</option>
+                        <option value="Segundos">Segundos</option>
+                        <option value="Postres">Postres</option>
+                        <option value="Bebidas">Bebidas</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre del Plato *</label>
+                    <input type="text" class="form-control dish-name" placeholder="Ej: Ensalada César">
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <input type="text" class="form-control dish-description" placeholder="Breve descripción del plato">
+                </div>
+
+                <div class="form-group">
+                    <label>Alérgenos</label>
+                    <div class="checkbox-group">
+                        ${ALLERGENS.map(allergen => `
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="${allergen}" class="dish-allergen">
+                                ${allergen}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(dishDiv);
+        }
+
+        function createMenu() {
+            const name = document.getElementById('menuName').value;
+            const description = document.getElementById('menuDescription').value;
+
+            if (!name) {
+                alert('Por favor, ingresa un nombre para el menú');
+                return;
+            }
+
+            const dishElements = document.querySelectorAll('#dishesContainer > .card');
+            const dishes = [];
+
+            dishElements.forEach(dishEl => {
+                const category = dishEl.querySelector('.dish-category').value;
+                const dishName = dishEl.querySelector('.dish-name').value;
+                const dishDescription = dishEl.querySelector('.dish-description').value;
+                const allergens = Array.from(dishEl.querySelectorAll('.dish-allergen:checked')).map(cb => cb.value);
+
+                if (dishName) {
+                    dishes.push({
+                        id: generateId(),
+                        category,
+                        name: dishName,
+                        description: dishDescription,
+                        allergens
+                    });
+                }
+            });
+
+            if (dishes.length === 0) {
+                alert('Por favor, añade al menos un plato al menú');
+                return;
+            }
+
+            const menus = getData(STORAGE_KEYS.MENUS);
+            const newMenu = {
+                id: generateId(),
+                name,
+                description,
+                dishes,
+                createdAt: new Date().toISOString()
+            };
+
+            menus.push(newMenu);
+            saveData(STORAGE_KEYS.MENUS, menus);
+
+            closeModal('newMenuModal');
+            clearMenuForm();
+            loadMenus();
+        }
+
+        function clearMenuForm() {
+            document.getElementById('menuName').value = '';
+            document.getElementById('menuDescription').value = '';
+            document.getElementById('dishesContainer').innerHTML = '';
+            dishCounter = 0;
+        }
+
+        function editMenu(menuId) {
+            // For simplicity, we'll just show details
+            const menus = getData(STORAGE_KEYS.MENUS);
+            const menu = menus.find(m => m.id === menuId);
+
+            if (!menu) return;
+
+            const content = `
+                <h3>${menu.name}</h3>
+                <p>${menu.description || 'Sin descripción'}</p>
+                ${renderMenuDetails(menu)}
+
+                <div class="action-buttons">
+                    <button class="btn btn-danger" onclick="deleteMenu('${menuId}')">
+                        🗑️ Eliminar Menú
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('eventDetailsTitle').textContent = 'Detalles del Menú';
+            document.getElementById('eventDetailsContent').innerHTML = content;
+            document.getElementById('eventDetailsModal').classList.add('active');
+        }
+
+        function deleteMenu(menuId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este menú?')) {
+                return;
+            }
+
+            let menus = getData(STORAGE_KEYS.MENUS);
+            menus = menus.filter(m => m.id !== menuId);
+            saveData(STORAGE_KEYS.MENUS, menus);
+
+            closeModal('eventDetailsModal');
+            loadMenus();
+        }
+
+        // Settings
+        function loadSettings() {
+            const settings = getData(STORAGE_KEYS.SETTINGS)[0] || {};
+            document.getElementById('restaurantName').value = settings.restaurantName || '';
+            document.getElementById('contactEmail').value = settings.contactEmail || '';
+            document.getElementById('contactPhone').value = settings.contactPhone || '';
+        }
+
+        function saveSettings() {
+            const settings = {
+                restaurantName: document.getElementById('restaurantName').value,
+                contactEmail: document.getElementById('contactEmail').value,
+                contactPhone: document.getElementById('contactPhone').value
+            };
+
+            saveData(STORAGE_KEYS.SETTINGS, [settings]);
+            alert('Configuración guardada correctamente');
+        }
+
+        // Guest View
+        function loadGuestEvent() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventToken = urlParams.get('event');
+
+            if (!eventToken) {
+                alert('Enlace no válido');
+                window.location.href = window.location.pathname;
+                return;
+            }
+
+            const events = getData(STORAGE_KEYS.EVENTS);
+            const event = events.find(e => e.token === eventToken);
+
+            if (!event) {
+                alert('Evento no encontrado');
+                window.location.href = window.location.pathname;
+                return;
+            }
+
+            // Check if deadline has passed
+            if (new Date(event.deadline) < new Date()) {
+                document.getElementById('guestEventInfo').innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <div style="font-size: 3rem; margin-bottom: 16px;">⏰</div>
+                        <h2>Evento Cerrado</h2>
+                        <p>Lo sentimos, el plazo para confirmar asistencia a este evento ha finalizado.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const menu = event.menuId ? getData(STORAGE_KEYS.MENUS).find(m => m.id === event.menuId) : null;
+
+            document.getElementById('guestEventInfo').innerHTML = `
+                <h2>${event.name}</h2>
+                <p>${event.description || ''}</p>
+                <div class="event-meta">
+                    <span class="badge badge-count">📅 ${formatDate(event.date)}${event.time ? ' a las ' + event.time : ''}</span>
+                    <span class="badge badge-count">⏰ Confirmar antes del ${formatDateTime(event.deadline)}</span>
+                </div>
+            `;
+
+            if (!menu) {
+                document.getElementById('guestMenuSelection').innerHTML = `
+                    <div class="card">
+                        <p>Este evento no tiene un menú asignado todavía.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            renderGuestMenu(menu, event);
+        }
+
+        function renderGuestMenu(menu, event) {
+            const groupedDishes = {};
+            menu.dishes.forEach(dish => {
+                if (!groupedDishes[dish.category]) {
+                    groupedDishes[dish.category] = [];
+                }
+                groupedDishes[dish.category].push(dish);
+            });
+
+            let html = '';
+            Object.keys(groupedDishes).forEach(category => {
+                html += `
+                    <div class="category-section">
+                        <h3>${category}</h3>
+                        <div class="grid grid-2">
+                            ${groupedDishes[category].map(dish => `
+                                <div class="dish-card" onclick="toggleDishSelection('${dish.id}', '${category}')" id="dish-${dish.id}">
+                                    <h4>${dish.name}</h4>
+                                    <p>${dish.description || ''}</p>
+                                    ${dish.allergens && dish.allergens.length > 0 ? `
+                                        <div class="allergens">
+                                            ${dish.allergens.map(a => `<span class="badge badge-allergen">⚠️ ${a}</span>`).join('')}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('guestMenuSelection').innerHTML = html;
+            document.getElementById('guestFormCard').style.display = 'block';
+        }
+
+        const selectedDishes = {};
+
+        function toggleDishSelection(dishId, category) {
+            const dishElement = document.getElementById('dish-' + dishId);
+
+            // Allow only one selection per category
+            document.querySelectorAll(`[id^="dish-"]`).forEach(el => {
+                if (el.dataset.category === category && el.id !== 'dish-' + dishId) {
+                    el.classList.remove('selected');
+                }
+            });
+
+            dishElement.classList.toggle('selected');
+            dishElement.dataset.category = category;
+
+            if (dishElement.classList.contains('selected')) {
+                selectedDishes[category] = dishId;
+            } else {
+                delete selectedDishes[category];
+            }
+        }
+
+        function submitGuestSelection() {
+            const name = document.getElementById('guestName').value;
+            const email = document.getElementById('guestEmail').value;
+            const allergyNotes = document.getElementById('guestAllergyNotes').value;
+
+            if (!name || !email) {
+                alert('Por favor, completa tu nombre y email');
+                return;
+            }
+
+            if (Object.keys(selectedDishes).length === 0) {
+                alert('Por favor, selecciona al menos un plato');
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventToken = urlParams.get('event');
+            const events = getData(STORAGE_KEYS.EVENTS);
+            const event = events.find(e => e.token === eventToken);
+
+            const participants = getData(STORAGE_KEYS.PARTICIPANTS);
+            const newParticipant = {
+                id: generateId(),
+                eventId: event.id,
+                name,
+                email,
+                allergyNotes,
+                selectedDishes: Object.values(selectedDishes),
+                confirmedAt: new Date().toISOString()
+            };
+
+            participants.push(newParticipant);
+            saveData(STORAGE_KEYS.PARTICIPANTS, participants);
+
+            // Show confirmation
+            const menu = getData(STORAGE_KEYS.MENUS).find(m => m.id === event.menuId);
+            const selectedDishNames = Object.values(selectedDishes).map(dishId => {
+                const dish = menu.dishes.find(d => d.id === dishId);
+                return dish ? dish.name : '';
+            }).filter(Boolean);
+
+            document.getElementById('guestFormCard').style.display = 'none';
+            document.getElementById('guestMenuSelection').style.display = 'none';
+            document.getElementById('guestConfirmation').style.display = 'block';
+            document.getElementById('guestSelectionSummary').innerHTML = `
+                <h3>Tu Selección</h3>
+                <p><strong>Nombre:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Platos seleccionados:</strong></p>
+                <ul>
+                    ${selectedDishNames.map(d => `<li>${d}</li>`).join('')}
+                </ul>
+                ${allergyNotes ? `<p><strong>Alergias/Restricciones:</strong> ${allergyNotes}</p>` : ''}
+            `;
+        }
+
+        // Export Functions
+        function exportToCSV(eventId) {
+            const events = getData(STORAGE_KEYS.EVENTS);
+            const event = events.find(e => e.id === eventId);
+            const participants = getData(STORAGE_KEYS.PARTICIPANTS).filter(p => p.eventId === eventId);
+            const menu = event.menuId ? getData(STORAGE_KEYS.MENUS).find(m => m.id === event.menuId) : null;
+
+            let csv = 'Nombre,Email,Platos,Alergias/Restricciones\n';
+
+            participants.forEach(p => {
+                let dishNames = '';
+                if (p.selectedDishes && menu) {
+                    dishNames = p.selectedDishes.map(dishId => {
+                        const dish = menu.dishes.find(d => d.id === dishId);
+                        return dish ? dish.name : '';
+                    }).join(' | ');
+                }
+
+                csv += `"${p.name}","${p.email}","${dishNames}","${p.allergyNotes || ''}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `menufy_${event.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function printEventReport(eventId) {
+            const events = getData(STORAGE_KEYS.EVENTS);
+            const event = events.find(e => e.id === eventId);
+            const participants = getData(STORAGE_KEYS.PARTICIPANTS).filter(p => p.eventId === eventId);
+            const menu = event.menuId ? getData(STORAGE_KEYS.MENUS).find(m => m.id === event.menuId) : null;
+
+            let printContent = `
+                <html>
+                <head>
+                    <title>Informe - ${event.name}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h1 { color: #4f46e5; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                        th { background-color: #4f46e5; color: white; }
+                        .header { margin-bottom: 30px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>${event.name}</h1>
+                        <p><strong>Fecha:</strong> ${formatDate(event.date)} ${event.time ? 'a las ' + event.time : ''}</p>
+                        <p><strong>Total Confirmados:</strong> ${participants.length}</p>
+                    </div>
+
+                    <h2>Listado de Participantes</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Platos Seleccionados</th>
+                                <th>Alergias/Restricciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${participants.map(p => {
+                                let dishNames = '';
+                                if (p.selectedDishes && menu) {
+                                    dishNames = p.selectedDishes.map(dishId => {
+                                        const dish = menu.dishes.find(d => d.id === dishId);
+                                        return dish ? dish.name : '';
+                                    }).join(', ');
+                                }
+
+                                return `
+                                    <tr>
+                                        <td>${p.name}</td>
+                                        <td>${p.email}</td>
+                                        <td>${dishNames}</td>
+                                        <td>${p.allergyNotes || '-'}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Modal Functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Utility Functions
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
